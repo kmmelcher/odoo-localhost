@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+
+<odoo> 
+	<data>
+        <!-- SCRATCH ITEMS TREE VIEW -->		
+		<record id="scratch_product_template_tree_view" model="ir.ui.view">
+			<field name="inherit_id" ref="product.product_template_tree_view"/>
+			<field name="model">product.template</field>
+			<field name="arch" type="xml">
+				<field name="standard_price" position="before">
+                    <field name="calories"/>
+                    <field name="nutrition_score"/>
+					<field name="serving_size"/>
+					<field name="last_updated"/>
+				</field>
+			</field>
+		</record>
+
+        <!-- SCRATCH ITEMS FORM VIEW -->    
+		<record id="scratch_product_template_form_view" model="ir.ui.view">
+			<field name="inherit_id" ref="product.product_template_only_form_view"/>
+			<field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <!-- GENERAL INFORMATION PAGE -->
+				<field name="taxes_id" position="after">
+					<field name="calories"/>
+                    <field name="nutrition_score"/>
+					<field name="serving_size"/>
+					<field name="last_updated"/>
+                </field>
+                <!-- NUTRIENTS PAGE -->
+                <page name="sales" position="after">
+                    <page name="nutrients" string="Nutrients">
+                        <field name="nutrient_ids" widget="one2many_list">
+                            <tree editable="bottom">
+                                <field name="nutrient_id"/>
+                                <field name="value"/>
+                                <field name="uom"/>
+                                <field name="daily_percent"/>
+                            </tree>
+                        </field>
+                    </page>
+                </page>
+			</field>
+		</record>
+
+        <!-- SCRATCH ITEMS ACTION --> 
+     	<record id="product_template_action_scratch" model="ir.actions.act_window">
+            <field name="name">Scratch Items</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">tree,kanban,form,activity</field>
+            <field name="view_id" ref="product.product_template_tree_view"/>
+            <field name="search_view_id" ref="product.product_template_search_view"/>
+            <field name="context">{"search_default_filter_to_sell":1,"sale_multi_pricelist_product_template": 1,"categ_id":4}</field>
+            <field name="domain">[('categ_id.name','=','Scratch Items')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Product
+                </p><p>
+                    You must define a product for everything you sell or purchase,
+                    whether it's a storable product, a consumable or a service.
+                </p>
+            </field>
+        </record>
+
+        <!-- MENU BUTTON FOR SCRATCH ITEMS ACTION --> 
+        <menuitem 
+            action="product_template_action_scratch" 
+            id="menu_product_template_action_scratch" 
+            parent="sale.product_menu_catalog" 
+            sequence="2" 
+            active="True"
+        />
+
+        <!-- MEAL TREE VIEW  -->
+        <record id="scratch_meal_tree_view" model="ir.ui.view">
+            <field name="model">res.users.meal</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="meal_date"/>
+                    <field name="user_id"/>
+                    <field name="total_calories" sum="Total Calories" />
+                </tree>
+            </field>
+        </record>
+
+        <!-- MEAL FORM VIEW  -->
+        <record id="scratch_meal_form_view" model="ir.ui.view">
+            <field name="model">res.users.meal</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="name"/>
+                        <field name="meal_date"/>
+                        <field name="user_id"/>
+                        <field name="total_calories"/>
+                        <field name="large_meal"/>
+                        <field name="notes"/>
+                    </group>
+                    <notebook>
+                        <page name="mealitems" string="Meal items">
+                            <field name="item_ids" widget="one2many_list">
+                                <tree editable="bottom">
+                                    <field name="item_id"/>
+                                    <field name="calories"/>
+                                    <field name="servings"/>
+                                    <field name="notes"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </form>
+            </field>
+        </record>
+
+        <!-- MEAL ACTION  -->
+        <record id="meal_action_scratch" model="ir.actions.act_window">
+            <field name="name">Meals</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.users.meal</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Meal
+                </p>
+            </field>
+        </record>
+
+        <!-- MENU BUTTON FOR MEAL ACTION  -->
+        <menuitem 
+            action="meal_action_scratch" 
+            id="menu_meal_action_scratch" 
+            parent="sale.sale_menu_root" 
+            sequence="4" 
+            active="True"
+        />
+
+        <!-- NUTRIENT ACTION  -->
+        <record id="nutrient_action_scratch" model="ir.actions.act_window">
+            <field name="name">Nutrients</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.nutrient</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Nutrient
+                </p>
+            </field>
+        </record>
+
+        <!-- MENU BUTTON FOR NUTRIENT ACTION  -->
+        <menuitem 
+            action="nutrient_action_scratch" 
+            id="menu_nutrient_action_scratch" 
+            parent="sale.sale_menu_root" 
+            sequence="5" 
+            active="True"
+        />
+
+        <template id="scratch.report_nutrition">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            <h1>Nutrition Report</h1>
+                            <h2>Product Name: <span t-field="o.name"/></h2>
+                            <p>Calories <span t-field="o.calories"/></p>
+                            <p>Nutrition Score: <span t-field="o.nutrition_score"/></p>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        
+        <report 
+            id="scratch.report_product"
+            model="product.template"
+            string="Nutrition Products"
+            report_type="qweb-pdf"
+            file="scratch.report_nutrition" 
+            name="scratch.report_nutrition"
+        />
+        
+    </data>
+
+</odoo>
