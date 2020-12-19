@@ -35,24 +35,24 @@ class Scratch_res_users_meal(models.Model):
     meal_date = fields.Datetime("Meal Date")
     item_ids = fields.One2many("res.users.meal.item","meal_id")
     user_id = fields.Many2one("res.users","Meal User")
-    large_meal = fields.Boolean("Large Meal", readonly=True)
+    large_meal = fields.Boolean("Large Meal")
     total_calories = fields.Integer(string="Total Meal Calories", store=True, compute="_sum_calories")
     notes = fields.Text("Meal Notes")
 
     @api.onchange('total_calories')
     def check_large_meal(self):
-            if self.total_calories > 500:
-                    self.large_meal = True
-            else:
-                    self.large_meal = False
+        if self.total_calories > 500:
+            self.large_meal = True
+        else:
+            self.large_meal = False
 
     @api.depends('item_ids','item_ids.servings')
     def _sum_calories(self):
-            current_calories = 0
-            for meal_item in self.item_ids:
-                    current_calories += meal_item.calories * meal_item.servings
-            self.total_calories = current_calories 
-	
+        current_calories = 0
+        for meal_item in self.item_ids:
+            current_calories += meal_item.calories * meal_item.servings
+        self.total_calories = current_calories 
+
 class Scratch_res_users_meal_item(models.Model):
     """
     Meal Item Model, which will represent every food 

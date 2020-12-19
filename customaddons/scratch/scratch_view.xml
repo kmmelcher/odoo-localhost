@@ -162,13 +162,21 @@
         <template id="scratch.report_nutrition">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
-                    <t t-call="web.external_layout">
+                    <t t-call="web.basic_layout">
                         <div class="page">
                             <div class="oe_structure"/>
                             <h1>Nutrition Report</h1>
                             <h2>Product Name: <span t-field="o.name"/></h2>
                             <p>Calories <span t-field="o.calories"/></p>
                             <p>Nutrition Score: <span t-field="o.nutrition_score"/></p>
+                            <h3>Nutrition Details</h3>
+                            <t t-foreach="o.nutrient_ids" t-as="line">
+                                <p>
+                                    <span t-field="line.nutrient_id.name" style="width: 30%;"/>
+                                    <span t-field="line.value" style="width: 30%;"/>
+                                    <span t-field="line.nutrient_id.uom_id.name" style="width: 30%;"/>
+                                </p>
+                            </t>
                         </div>
                     </t>
                 </t>
